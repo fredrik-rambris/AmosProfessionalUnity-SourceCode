@@ -1,0 +1,18 @@
+# Force Assembly language detection for Unity source tree
+src/**                         linguist-language=Assembly
+includes/**                    linguist-language=Assembly
+includesSAGA/**                linguist-language=Assembly
+
+# Common include/extensions used by the project
+*.i                            linguist-language=Assembly
+*.inc                          linguist-language=Assembly
+*.asm                          linguist-language=Assembly
+*.s                            linguist-language=Assembly
+
+# OS headers / third-party (if present) should not skew language stats
+includes/OS/**                 linguist-vendored
+includes/OS/**                 linguist-detectable=false
+
+# Documentation & generated content (optional, harmless if missing)
+docs/**                        linguist-documentation
+generated/**                   linguist-generated
