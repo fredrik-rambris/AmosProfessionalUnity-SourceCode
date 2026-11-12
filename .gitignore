@@ -1,4 +1,9 @@
 ForLater
 c/vasmm68k_std_os3
 logs
-tmpcompil
+tmpCompil
+*.uaem
+.idea
+CLAUDE.md
+AGENTS.md
+.claude
