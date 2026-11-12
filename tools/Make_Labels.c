@@ -1,3 +1,10 @@
+/* C port of c/Make_Labels.Asc - scans the internal library source (ILib)
+ * and then the main library source (Lib) for Lib_ declarations and writes
+ * the label equates, the internal jump list and the size/definition files.
+ * Filenames are taken from the command line instead of being hardcoded.
+ *
+ * Usage: Make_Labels <ILib.s> <Lib.s> <LEqu.s> <Internal_Jumps.s>
+ *                    <ILib_Size.s> <ILib_Functions.s> <Lib_Size.s> */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -82,14 +89,17 @@ void search()
 
 int main(int argc, char **argv)
 {
-    (void)argc;
-    (void)argv;
+    if (argc != 8)
+    {
+        printf("Usage: %s <ILib.s> <Lib.s> <LEqu.s> <Internal_Jumps.s> <ILib_Size.s> <ILib_Functions.s> <Lib_Size.s>\n", argv[0]);
+        return 1;
+    }
 
-    open_input_file(&in, "+ILib.s");
-    open_output_file(&out1, "+LEqu.s", "AMOSPro Internal Library functions");
-    open_output_file(&out2, "+Internal_Jumps.s", "AMOSPro Internal Jump list");
-    open_output_file(&out3, "+ILib_Size.s", "AMOSPro Internal Library Size");
-    open_output_file(&out4, "+ILib_Functions.s", "AMOSPro Internal Library Definition");
+    open_input_file(&in, argv[1]);
+    open_output_file(&out1, argv[3], "AMOSPro Internal Library functions");
+    open_output_file(&out2, argv[4], "AMOSPro Internal Jump list");
+    open_output_file(&out3, argv[5], "AMOSPro Internal Library Size");
+    open_output_file(&out4, argv[6], "AMOSPro Internal Library Definition");
 
     search();
 
@@ -104,7 +114,7 @@ int main(int argc, char **argv)
         fprintf(out4, "\tLib_Pos\t%d\n", lab_count);
     }
 
-    /* out1 (+LEqu.s) stays open across both scans - the original only
+    /* out1 (the LEqu file) stays open across both scans - the original only
      * closes channels 2 and 3 here, and appends a small divider header to
      * channel 1 instead of reopening it. */
     if (out2)
@@ -134,8 +144,8 @@ int main(int argc, char **argv)
         fprintf(out1, "; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     }
 
-    open_input_file(&in, "+Lib.s");
-    open_output_file(&out3, "+Lib_Size.s", "AMOSPro Main Library Size");
+    open_input_file(&in, argv[2]);
+    open_output_file(&out3, argv[7], "AMOSPro Unity Main Library Size");
 
     search();
 

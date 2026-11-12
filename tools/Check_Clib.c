@@ -13,7 +13,7 @@
  * global error count and use it as the process exit code instead of
  * silently returning to the AMOS editor.
  *
- * Filenames ("+LEqu.s", "+CLib.s") are hardcoded, same as the original. */
+ * Usage: Check_Clib <LEqu.s> <CLib.s> - the original hardcoded the names. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,8 +52,8 @@ static void chomp(char *row)
 
 int main(int argc, char **argv)
 {
-    const char *lequ_name = "+LEqu.s";
-    const char *clib_name = "+CLib.s";
+    const char *lequ_name;
+    const char *clib_name;
     char *labels_buf;
     size_t labels_size;
     char *hunt_pos, *hunt_end, *found;
@@ -62,8 +62,13 @@ int main(int argc, char **argv)
     int found_ini = 0;
     int line_no = 0;
 
-    (void)argc;
-    (void)argv;
+    if (argc != 3)
+    {
+        printf("Usage: %s <LEqu.s> <CLib.s>\n", argv[0]);
+        return 1;
+    }
+    lequ_name = argv[1];
+    clib_name = argv[2];
 
     printf("Loading %s...\n", lequ_name);
     if ((labels_buf = read_file(lequ_name, &labels_size)) == NULL)

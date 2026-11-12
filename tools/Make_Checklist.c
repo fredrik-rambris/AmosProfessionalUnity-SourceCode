@@ -32,7 +32,10 @@
  * sits after an unconditional `End` in the original and can never run -
  * it's dead code, so it isn't ported. The unused _DATE$/_TIME$/_BREAK/
  * _EXTRACT helpers (only there for the CLI console and the dead code) are
- * dropped too. */
+ * dropped too.
+ *
+ * Usage: Make_Checklist <output> <source.s>... - the original hardcoded
+ * both the output name and the list of sources. */
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,15 +43,6 @@
 #include <time.h>
 
 #include "common.h"
-
-static const char *SOURCES[] = {
-    "+Lib.s",
-    "+Music.s",
-    "+Compact.s",
-    "+Request.s",
-    "+IO_Ports.s",
-};
-#define NUM_SOURCES (int)(sizeof(SOURCES) / sizeof(SOURCES[0]))
 
 #define MAX_INSTRUCTIONS 4096
 
@@ -210,18 +204,22 @@ static int cmp_str(const void *a, const void *b)
 
 int main(int argc, char **argv)
 {
-    const char *out_name = "Instruction_List.Asc";
+    const char *out_name;
     FILE *out;
     char dt[100];
     time_t t;
     int i;
 
-    (void)argc;
-    (void)argv;
-
-    for (i = 0; i < NUM_SOURCES; i++)
+    if (argc < 3)
     {
-        scan_file(SOURCES[i]);
+        printf("Usage: %s <output> <source.s>...\n", argv[0]);
+        return 1;
+    }
+    out_name = argv[1];
+
+    for (i = 2; i < argc; i++)
+    {
+        scan_file(argv[i]);
     }
 
     printf("Total number of instructions: %d\n", ninst);
@@ -240,7 +238,7 @@ int main(int argc, char **argv)
     }
 
     fprintf(out, "' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-    fprintf(out, "' AMOSPro II %d instructions on the %s\n", ninst, dt);
+    fprintf(out, "' Amos Professional Unity %d instructions on the %s\n", ninst, dt);
     fprintf(out, "' %d%% complete...\n", ninst ? (nfait * 100) / ninst : 0);
     fprintf(out, "'\n");
     fprintf(out, "' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
